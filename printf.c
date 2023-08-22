@@ -1,7 +1,7 @@
 #include <stdio.h>    
-#include <stdarg.h>   
-#include <unistd.h>   
-#include "main.h"   
+#include <stdarg.h>  
+#include <unistd.h>  
+#include "main.h"    
 
 #define BUFF_SIZE 1024 
 
