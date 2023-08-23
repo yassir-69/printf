@@ -1,12 +1,13 @@
 #include "main.h"
 
 /**
- * get_specifier - Determines the suitable printing function according to the format specifier provided.
- * @s: format string.
+ * find_specifier_function - Finds the appropriate format function.
+ * @format_char: The format character.
  *
- * Return: returns a pointer to the corresponding printing function.
+ * Return: The corresponding function pointer.
  */
-int (*get_specifier(char *s))(va_list ap, params_t *params) {
+int (*find_specifier_function(char *format_char))(va_list ap, params_t *params)
+{
     specifier_t specifiers[] = {
         {"c", print_char},
         {"d", print_int},
@@ -19,16 +20,18 @@ int (*get_specifier(char *s))(va_list ap, params_t *params) {
         {"x", print_hex},
         {"X", print_HEX},
         {"p", print_address},
-        {"S", print_S},
-        {"r", print_rev},
-        {"R", print_rot13},
+        {"S", print_custom_string},
+        {"r", print_reverse},
+        {"R", print_rot13_string},
         {NULL, NULL}
     };
     int i = 0;
 
-    while (specifiers[i].specifier) {
-        if (*s == specifiers[i].specifier[0]) {
-            return specifiers[i].f;
+    while (specifiers[i].specifier)
+    {
+        if (*format_char == specifiers[i].specifier[0])
+        {
+            return specifiers[i].function;
         }
         i++;
     }
@@ -36,83 +39,102 @@ int (*get_specifier(char *s))(va_list ap, params_t *params) {
 }
 
 /**
- * get_print_func - Determines the printing function for a given format specifier.
- * @s: format string.
- * @ap: argument pointer.
- * @params: parameters struct.
+ * get_print_function - Gets the format function for a specifier.
+ * @format_char: The format character.
+ * @ap: Argument pointer.
+ * @params: The parameters struct.
  *
- * Return: The number of bytes printed.
+ * Return: The corresponding function pointer.
  */
-int get_print_func(char *s, va_list ap, params_t *params) {
-    int (*f)(va_list, params_t *) = get_specifier(s);
+int get_print_function(char *format_char, va_list ap, params_t *params)
+{
+    int (*func)(va_list, params_t *) = find_specifier_function(format_char);
 
-    if (f) {
-        return f(ap, params);
-    }
+    if (func)
+        return func(ap, params);
     return 0;
 }
 
 /**
- * get_flag - Determines the presence of a flag in the format string.
- * @s: format string.
- * @params: parameters struct.
+ * find_flag - Finds and applies a flag.
+ * @format_char: The format character.
+ * @params: The parameters struct.
  *
- * Return: 1 if the flag is present, 0 otherwise.
+ * Return: 1 if flag was found, 0 otherwise.
  */
-int get_flag(char *s, params_t *params) {
-    switch (*s) {
+int find_flag(char *format_char, params_t *params)
+{
+    int found = 0;
+
+    switch (*format_char)
+    {
         case '+':
-            return (params->plus_flag = 1);
+            found = params->plus_flag = 1;
+            break;
         case ' ':
-            return (params->space_flag = 1);
+            found = params->space_flag = 1;
+            break;
         case '#':
-            return (params->hashtag_flag = 1);
+            found = params->hashtag_flag = 1;
+            break;
         case '-':
-            return (params->minus_flag = 1);
+            found = params->minus_flag = 1;
+            break;
         case '0':
-            return (params->zero_flag = 1);
-        default:
-            return 0;
+            found = params->zero_flag = 1;
+            break;
     }
+    return found;
 }
 
 /**
- * get_modifier - Determines the presence of a modifier in the format string.
- * @s: format string.
- * @params: parameters struct.
+ * find_modifier - Finds and applies a modifier.
+ * @format_char: The format character.
+ * @params: The parameters struct.
  *
- * Return: 1 if the modifier is present, 0 otherwise.
+ * Return: 1 if modifier was found, 0 otherwise.
  */
-int get_modifier(char *s, params_t *params) {
-    switch (*s) {
+int find_modifier(char *format_char, params_t *params)
+{
+    int found = 0;
+
+    switch (*format_char)
+    {
         case 'h':
-            return (params->h_modifier = 1);
+            found = params->h_modifier = 1;
+            break;
         case 'l':
-            return (params->l_modifier = 1);
-        default:
-            return 0;
+            found = params->l_modifier = 1;
+            break;
     }
+    return found;
 }
 
 /**
- * get_width - Parses the width from the format string.
- * @s: format string.
- * @params: parameters struct.
- * @ap: argument pointer.
+ * extract_width - Extracts the width from the format string.
+ * @format_char: The format character.
+ * @params: The parameters struct.
+ * @ap: Argument pointer.
  *
- * Return: The new pointer after parsing the width.
+ * Return: New pointer position.
  */
-char *get_width(char *s, params_t *params, va_list ap) {
-    int d = 0;
+char *extract_width(char *format_char, params_t *params, va_list ap)
+{
+    int width = 0;
 
-    if (*s == '*') {
-        d = va_arg(ap, int);
-        s++;
-    } else {
-        while (_isdigit(*s)) {
-            d = d * 10 + (*s++ - '0');
+    if (*format_char == '*')
+    {
+        width = va_arg(ap, int);
+        format_char++;
+    }
+    else
+    {
+        while (_isdigit(*format_char))
+        {
+            width = width * 10 + (*format_char - '0');
+            format_char++;
         }
     }
-    params->width = d;
-    return s;
+    params->width = width;
+    return format_char;
 }
