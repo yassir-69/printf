@@ -110,5 +110,5 @@ int print_octal_number(va_list arg_list, params_t *parameters)
         *--octal_str = '0';
 
     parameters->unsign = 1;
-    return (byte_count += print_formatted_number(octal_str, parameters));
+    return (byte_count += print_formatted_number(octal_str, parameters));
 }
