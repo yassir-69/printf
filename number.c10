@@ -1,0 +1,114 @@
+#include "main.h"
+
+/**
+ * print_lower_hex - Prints unsigned hexadecimal numbers in lowercase.
+ * @arg_list: The argument pointer.
+ * @parameters: The parameters struct.
+ *
+ * Return: Bytes printed.
+ */
+int print_lower_hex(va_list arg_list, params_t *parameters)
+{
+    unsigned long value;
+    int byte_count = 0;
+    char *hex_str;
+
+    if (parameters->l_modifier)
+        value = (unsigned long)va_arg(arg_list, unsigned long);
+    else if (parameters->h_modifier)
+        value = (unsigned short int)va_arg(arg_list, unsigned int);
+    else
+        value = (unsigned int)va_arg(arg_list, unsigned int);
+
+    hex_str = convert(value, 16, CONVERT_UNSIGNED | CONVERT_LOWERCASE, parameters);
+
+    if (parameters->hashtag_flag && value)
+    {
+        *--hex_str = 'x';
+        *--hex_str = '0';
+    }
+
+    parameters->unsign = 1;
+    return (byte_count += print_formatted_number(hex_str, parameters));
+}
+
+/**
+ * print_upper_hex - Prints unsigned hexadecimal numbers in uppercase.
+ * @arg_list: The argument pointer.
+ * @parameters: The parameters struct.
+ *
+ * Return: Bytes printed.
+ */
+int print_upper_hex(va_list arg_list, params_t *parameters)
+{
+    unsigned long value;
+    int byte_count = 0;
+    char *hex_str;
+
+    if (parameters->l_modifier)
+        value = (unsigned long)va_arg(arg_list, unsigned long);
+    else if (parameters->h_modifier)
+        value = (unsigned short int)va_arg(arg_list, unsigned int);
+    else
+        value = (unsigned int)va_arg(arg_list, unsigned int);
+
+    hex_str = convert(value, 16, CONVERT_UNSIGNED, parameters);
+
+    if (parameters->hashtag_flag && value)
+    {
+        *--hex_str = 'X';
+        *--hex_str = '0';
+    }
+
+    parameters->unsign = 1;
+    return (byte_count += print_formatted_number(hex_str, parameters));
+}
+
+/**
+ * print_binary_number - Prints unsigned binary number.
+ * @arg_list: The argument pointer.
+ * @parameters: The parameters struct.
+ *
+ * Return: Bytes printed.
+ */
+int print_binary_number(va_list arg_list, params_t *parameters)
+{
+    unsigned int num = va_arg(arg_list, unsigned int);
+    char *binary_str = convert(num, 2, CONVERT_UNSIGNED, parameters);
+    int byte_count = 0;
+
+    if (parameters->hashtag_flag && num)
+        *--binary_str = '0';
+
+    parameters->unsign = 1;
+    return (byte_count += print_formatted_number(binary_str, parameters));
+}
+
+/**
+ * print_octal_number - Prints unsigned octal numbers.
+ * @arg_list: The argument pointer.
+ * @parameters: The parameters struct.
+ *
+ * Return: Bytes printed.
+ */
+int print_octal_number(va_list arg_list, params_t *parameters)
+{
+    unsigned long value;
+    char *octal_str;
+    int byte_count = 0;
+
+    if (parameters->l_modifier)
+        value = (unsigned long)va_arg(arg_list, unsigned long);
+    else if (parameters->h_modifier)
+        value = (unsigned short int)va_arg(arg_list, unsigned int);
+    else
+        value = (unsigned int)va_arg(arg_list, unsigned int);
+
+    octal_str = convert(value, 8, CONVERT_UNSIGNED, parameters);
+
+    if (parameters->hashtag_flag && value)
+        *--octal_str = '0';
+
+    parameters->unsign = 1;
+    return (byte_count += print_formatted_number(octal_str, parameters));
+}
