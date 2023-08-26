@@ -31,8 +31,8 @@ char *convert_to_string(long int num, int base, int flags, params_t *params)
     } while (n != 0);
     if (sign)
         *--ptr = sign;
-    
-    return ptr;
+
+ return ptr;
 }
 
 /**
@@ -66,7 +66,8 @@ int print_unsigned_integer(va_list arg_list, params_t *parameters)
  */
 int print_memory_address(va_list arg_list, params_t *parameters)
 {
-    unsigned long int address = va_arg(arg_list, unsigned long int);
+
+ unsigned long int address = va_arg(arg_list, unsigned long int);
     char *str;
 
     if (!address)
@@ -77,3 +78,4 @@ int print_memory_address(va_list arg_list, params_t *parameters)
     *--str = '0';
     return print_formatted_number(str, parameters);
 }
+                                                                                                                          79,1          Bot
